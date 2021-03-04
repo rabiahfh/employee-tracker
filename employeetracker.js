@@ -37,23 +37,38 @@ const askFirstQuestions = () => {
                         choices: ["Department", "Role", "Employee"]
 
                     }
-                ]
-                )
-                .then(answers => {
-                    const { choice } = answers;
-                        inquirer.prompt([
-                            {
-                                type: "list",
-                                message: "What would you like to add?",
-                                name: "choice",
-                                choices: ["Department", "Role", "Employee"]
-        
-                            }
-                        ]
-                        )
-                     }
-        
-             })
+                ])
+                    .then(answers => {
+                        const { choice } = answers;
+                        if (choice == "Department") {
+                            inquirer.prompt([
+                                {
+                                    type: "input",
+                                    message: "Enter the name of the department: ",
+                                    name: "department_name",
+                                }
+                            ])
+                                .then(answers => {
+                                    const { department_name } = answers;
+                                    connection.query('INSERT INTO department (name) VALUES (?)', [department_name], function (error, results, fields) {
+                                        if (error) throw error;
+
+                                    });
+                                })
+
+                        } else if (choice == 'Role') {
+                            inquirer.prompt([
+                                {
+                                    type: "list",
+                                    message: "What would you like to add?",
+                                    name: "choice",
+                                    choices: ["Department", "Role", "Employee"]
+                                }
+                            ])
+                        } else {
+
+                        }
+                    })
             }
             else if (choice === "VIEW DEPT., ROLE") {
                 // ...
