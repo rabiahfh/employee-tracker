@@ -36,7 +36,7 @@ INSERT INTO department (id, name)
 VALUES (4, "Irv");
 INSERT INTO department (id, name)
 VALUES (5, "Diane");
-
+-- INSERTED VALUE IN ROLE TABLE
 INSERT INTO role (id, title, salary, department_id )
 VALUES (1, " manager",50000.00, 1);
 INSERT INTO role (id, title, salary, department_id )
@@ -47,4 +47,17 @@ INSERT INTO role (id, title, salary, department_id )
 VALUES (4, " engineer",20000.00, 4);
 INSERT INTO role (id, title, salary, department_id )
 VALUES (5, " student",10000.00, 5);
+-- INSERTED VALUE IN EMPLOYEE TABLE
+INSERT INTO employee (id, first_name, last_name,
+  role_id,  manager_id)
+VALUES (1,"Rabiah", "Hogans", 1, 1);
+INSERT INTO employee (id, first_name, last_name,
+  role_id,  manager_id)
+VALUES (2,"Tammy", "Clark", 2, 2);INSERT INTO employee (id, first_name, last_name,
+  role_id,  manager_id)
+VALUES (3,"Edna", "Johnson", 3, 3);INSERT INTO employee (id, first_name, last_name,
+  role_id,  manager_id)
+VALUES (4,"Irv", "Rockington", 4, 4);INSERT INTO employee (id, first_name, last_name,
+  role_id,  manager_id)
+VALUES (5,"Diane", "White", 5, 5);
 
