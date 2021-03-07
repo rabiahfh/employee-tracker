@@ -83,6 +83,8 @@ const askFirstQuestions = () => {
                         }
                     })
             }
+                            // QUestion to ask which table they want to view
+
             else if (choice === "VIEW DEPARTMENTS, ROLES, OR EMPLOYEES") {
                 inquirer.prompt([
 
@@ -122,7 +124,6 @@ const askFirstQuestions = () => {
 
 
 
-                // QUestion to ask which table they want to view
                 // Depending on what table they want to view, tell your mySQL database to SELECT from that table 
             }
             else if (choice === "UPDATE EMPLOYEE ROLES") {
