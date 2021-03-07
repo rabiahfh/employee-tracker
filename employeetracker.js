@@ -209,24 +209,50 @@ const askFirstQuestions = () => {
                 // Depending on what table they want to view, tell your mySQL database to SELECT from that table 
             }
             else if (choice === "UPDATE EMPLOYEE ROLES") {
-                
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        message: "What is your employee id: ",
-                        name: "employeeId"
-                    },
-                    {
-                        type: "input",
-                        message: "What is your new role id:",
-                        name: "roleId"
-                    },
-                ]).then(answers => {
-                    const { employeeId, roleId } = answers
-                    connection.query("UPDATE employee set role_id = ? WHERE id = ?", [roleId, employeeId], function (err, results) {
-                        console.log("employees role has been updated")
-                        askFirstQuestions()
+                connection.query('SELECT * FROM role', function (error, role_results, fields) {
+                    const roles = [];
+                    for (let i = 0; i < role_results.length; i++) {
+                        roles.push(role_results[i].title);
+                    }
+                    connection.query('SELECT * FROM employee', function (error, employee_results, fields) {
+                        const employees = [];
+                        for (let i = 0; i < employee_results.length; i++) {
+                            employees.push(employee_results[i].first_name + ' ' + employee_results[i].last_name);
+                        }
+                        inquirer.prompt([
+                            {
+                                type: "list",
+                                message: "Which employee do you want to update ",
+                                name: "employee_name",
+                                choices: employees
+                            },
+                            {
+                                type: "list",
+                                message: "Select the new role: ",
+                                name: "employee_role",
+                                choices: roles
+                            },
+                        ])
+                            .then(answers => {
+                                const { employee_name, employee_role } = answers;
+                                const role = role_results.find(role => {
+                                    return role.title === employee_role;
+                                })
+                                const roleId = role.id;
+                                const employeeFound = employee_results.find(employee => {
+                                    return employee.first_name + ' ' + employee.last_name === employee_name;
+                                })
+                                const employeeId = employeeFound.id;
+                                connection.query("UPDATE employee set role_id = ? WHERE id = ?", [roleId, employeeId], function (err, results) {
+                                    if (error) console.log(error)
+                                    console.log('Employee role has been updated.');
+                                    askFirstQuestions();
+                                })
+                            })
                     })
+
+             
+                 
                 })
             }
             else {
