@@ -142,12 +142,13 @@ const askFirstQuestions = () => {
                                             const manager = employee_results.find(employee => {
                                                 return employee.first_name + ' ' + employee.last_name === employee_manager;
                                             })
-                                            let managerId = '';
+                                            let managerId = null;
                                             if (manager != null) {
                                                 managerId = manager.id;
                                             }
                                           
                                             connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(?,?,?,?)', [first_name, last_name, roleId, managerId ], function (error, results, fields) {
+                                                if (error) console.log(error)
                                                 console.log('Employee has been added.');
                                                 askFirstQuestions();
                                             })
@@ -187,14 +188,15 @@ const askFirstQuestions = () => {
                                 askFirstQuestions()
                             })
                         } else if (choice == "Roles") {
-                            connection.query('SELECT * FROM role', function (error, results) {
+                            connection.query('SELECT role.id, title, department.name FROM role INNER JOIN department ON role.department_id = department.id', function (error, results) {
                                 console.table(results);
                                 askFirstQuestions()
                             })
 
 
                         } else {
-                            connection.query('SELECT * FROM employee', function (error, results) {
+                            connection.query('SELECT e.id, e.first_name, e.last_name, title, salary, m.first_name as manager FROM employee e INNER JOIN role ON e.role_id = role.id LEFT JOIN employee m ON e.manager_id = m.id', function (error, results) {
+                                if (error) console.log(error);
                                 console.table(results);
                                 askFirstQuestions()
                             })
@@ -207,6 +209,7 @@ const askFirstQuestions = () => {
                 // Depending on what table they want to view, tell your mySQL database to SELECT from that table 
             }
             else if (choice === "UPDATE EMPLOYEE ROLES") {
+                
                 inquirer.prompt([
                     {
                         type: "input",
