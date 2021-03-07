@@ -1,5 +1,6 @@
 const mysql = require("mysql")
 const inquirer = require("inquirer")
+const cTable = require('console.table');
 
 // connect to the database
 const connection = mysql.createConnection({
@@ -21,7 +22,7 @@ const askFirstQuestions = () => {
             type: "list",
             message: "What would you like to do?",
             name: "choice",
-            choices: ["ADD DEPT. ROLES, EMPLOYEES", "VIEW DEPT., ROLES", "UPDATE EMPLOYEE ROLES"]
+            choices: ["ADD DEPT. ROLES, EMPLOYEES", "VIEW DEPARTMENTS, ROLES, OR EMPLOYEES", "UPDATE EMPLOYEE ROLES"]
 
         }
     ]
@@ -52,26 +53,97 @@ const askFirstQuestions = () => {
                                     const { department_name } = answers;
                                     connection.query('INSERT INTO department (name) VALUES (?)', [department_name], function (error, results, fields) {
                                         if (error) throw error;
-
+                                        process.exit();
                                     });
                                 })
 
                         } else if (choice == 'Role') {
-                            inquirer.prompt([
-                                {
-                                    type: "list",
-                                    message: "What would you like to add?",
-                                    name: "choice",
-                                    choices: ["Department", "Role", "Employee"]
-                                }
-                            ])
+                            connection.query('SELECT * FROM departments', function (error, results, fields) {
+                                if (error) throw error;
+                                inquirer.prompt([
+                                    {
+                                        type: "input",
+                                        message: "Enter title of role: ",
+                                        name: "role_name",
+                                    },
+                                    {
+                                        type: "input",
+                                        message: "Enter salary of role: ",
+                                        name: "role_salary",
+                                    },
+                                    {
+                                        type: "list",
+                                        message: "Select the department you belong to ",
+                                        name: "department_name",
+                                    }
+                                ])
+                            })
                         } else {
 
                         }
                     })
             }
-            else if (choice === "VIEW DEPT., ROLE") {
-                // ...
+            else if (choice === "VIEW DEPARTMENTS, ROLES, OR EMPLOYEES") {
+                inquirer.prompt([
+
+                    {
+                        type: "list",
+                        message: "What would you like to view?",
+                        name: "choice",
+                        choices: ["Departments", "Roles", "Employees"]
+
+                    }
+                ])
+                    .then(answers => {
+                        const { choice } = answers;
+                        console.log(choice)
+                        if (choice === "Departments") {
+                            // Tell mysql to go and grab the departments
+                            console.log("here")
+                            connection.query('SELECT * FROM department', function (error, results) {
+                                console.table(results);
+                                askFirstQuestions()
+                            })
+                        } else if (choice == "Roles") {
+                            connection.query('SELECT * FROM employee', function (error, results) {
+                                console.table(results);
+                                askFirstQuestions()
+                            })
+
+
+                        } else {
+                            connection.query('SELECT * FROM role', function (error, results) {
+                                console.table(results);
+                                askFirstQuestions()
+                            })
+
+                        }
+                    });
+
+
+
+                // QUestion to ask which table they want to view
+                // Depending on what table they want to view, tell your mySQL database to SELECT from that table 
+            }
+            else if (choice === "UPDATE EMPLOYEE ROLES") {
+                inquirer.prompt([
+                    {
+                        type: "input",
+                        message: "What is your employee id: ",
+                        name: "employeeId"
+                    },
+                    {
+                        type: "input",
+                        message: "What is your new role id:",      
+                        name: "roleId"
+                    },
+                ]).then(answers=>{
+                    const {employeeId, roleId}= answers
+                    connection.query("UPDATE employee set role_id = ? WHERE id = ?", [roleId, employeeId],function(err, results){
+                        console.log("employees role has been updated")
+                        askFirstQuestions()
+                    })
+                })
             }
             else {
                 connection.end();
