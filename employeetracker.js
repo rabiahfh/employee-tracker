@@ -53,12 +53,19 @@ const askFirstQuestions = () => {
                                     const { department_name } = answers;
                                     connection.query('INSERT INTO department (name) VALUES (?)', [department_name], function (error, results, fields) {
                                         if (error) throw error;
-                                        process.exit();
+                                        askFirstQuestions();
                                     });
                                 })
 
                         } else if (choice == 'Role') {
-                            connection.query('SELECT * FROM departments', function (error, results, fields) {
+                            
+                            connection.query('SELECT * FROM department', function (error, results, fields) {
+    
+                                const departments = [];
+                                for (let i = 0; i < results.length; i++) {
+                                    departments.push(results[i].name);
+                                }
+
                                 if (error) throw error;
                                 inquirer.prompt([
                                     {
@@ -75,10 +82,24 @@ const askFirstQuestions = () => {
                                         type: "list",
                                         message: "Select the department you belong to ",
                                         name: "department_name",
+                                        choices: departments
+                                    
                                     }
                                 ])
+                                .then(answers => {
+                                    const {role_name, role_salary, department_name} = answers;
+                                    const department = results.find(department => {
+                                        return department.name = department_name;
+                                    })
+                                    const departmentId = department.id;
+                                    connection.query('INSERT INTO role (title, salary, department_id) VALUES(?,?,?)', [role_name, role_salary, departmentId], function (error, results, fields) {
+                                        console.log('Role has been added.');
+                                        askFirstQuestions();
+                                    })
+                                })
                             })
                         } else {
+                            
 
                         }
                     })
