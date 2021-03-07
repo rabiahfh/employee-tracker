@@ -107,14 +107,14 @@ const askFirstQuestions = () => {
                                 askFirstQuestions()
                             })
                         } else if (choice == "Roles") {
-                            connection.query('SELECT * FROM employee', function (error, results) {
+                            connection.query('SELECT * FROM role', function (error, results) {
                                 console.table(results);
                                 askFirstQuestions()
                             })
 
 
                         } else {
-                            connection.query('SELECT * FROM role', function (error, results) {
+                            connection.query('SELECT * FROM employee', function (error, results) {
                                 console.table(results);
                                 askFirstQuestions()
                             })
